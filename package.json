@@ -1,14 +1,23 @@
 {
   "name": "qelm-lab",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Reusable building blocks for interactive quantum learning visualizations",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
-    "./browser": "./src/browser.js"
+    "./browser": "./src/browser.js",
+    "./bundle": "./dist/qelm.js",
+    "./package.json": "./package.json"
   },
+  "files": [
+    "src",
+    "dist",
+    "docs"
+  ],
+  "sideEffects": false,
   "scripts": {
-    "test": "node tests/core.test.js",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.js",
     "serve": "python3 -m http.server 8000"
   },
   "engines": {
