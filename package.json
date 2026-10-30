@@ -1,0 +1,17 @@
+{
+  "name": "qelm-lab",
+  "version": "0.1.0",
+  "description": "Reusable building blocks for interactive quantum learning visualizations",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./browser": "./src/browser.js"
+  },
+  "scripts": {
+    "test": "node tests/core.test.js",
+    "serve": "python3 -m http.server 8000"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
