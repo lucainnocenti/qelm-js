@@ -1,6 +1,6 @@
 # QELM Lab
 
-A dependency-free ES module toolkit for interactive quantum extreme learning machine (QELM) experiments. It extracts common ideas from the supplied MSE and qubit POVM labs into composable numerical, experiment, and browser modules. The original labs are inspiration, not drop-in wrappers; the library does not reproduce their complete UIs, analytical MSE formulas, or plotting engines.
+A dependency-free ES module toolkit for interactive quantum extreme learning machine (QELM) experiments.
 
 ## Run the example
 
