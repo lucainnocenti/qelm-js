@@ -22,6 +22,13 @@ export function symmetricEigen(matrix, {tolerance=1e-13, maxSweeps=100}={}) {
   if(!converged) throw new Error('eigensolver did not converge');
   return Array.from({length:n},(_,i)=>({value:a[i][i],vector:v.map(row=>row[i])})).sort((x,y)=>y.value-x.value);
 }
+/** Ridge filter for an SVD mode with squared singular value s².
+ * Apply only to retained modes when using a truncated SVD. */
+export function ridgeSpectralFactor(squaredSingularValue, lambda = 0) {
+  if (!Number.isFinite(squaredSingularValue) || squaredSingularValue < 0 || !Number.isFinite(lambda) || lambda < 0) throw new RangeError('squared singular value and lambda must be finite and nonnegative');
+  if (squaredSingularValue === 0 && lambda === 0) return 0;
+  return 1 / (squaredSingularValue + lambda);
+}
 /** Ridge regression minimizing ||Xw-y||² + lambda ||w||². lambda=0 uses a truncated pseudoinverse. */
 export function fitReadout(X,y,{lambda=0,rcond=1e-10}={}) {
   if(!Array.isArray(X)||!X.length||!X[0].length||X.length!==y.length||X.some(r=>r.length!==X[0].length||!r.every(Number.isFinite))||!y.every(Number.isFinite)) throw new TypeError('X and y must be finite, rectangular, and have matching rows');
@@ -31,6 +38,6 @@ export function fitReadout(X,y,{lambda=0,rcond=1e-10}={}) {
   const eig=symmetricEigen(gram), cutoff=Math.max(0,eig[0].value)*rcond*rcond, weights=Array(n).fill(0); let rank=0;
   // Gram matrices square the condition number; discard eigenvalues below numerical precision.
   const numerical=Math.max(0,eig[0].value)*Number.EPSILON*n*8;
-  for(const e of eig) { if(e.value<=Math.max(cutoff,numerical)) continue; rank++; const a=dot(e.vector,rhs)/(e.value+lambda); e.vector.forEach((v,i)=>weights[i]+=a*v); }
+  for(const e of eig) { if(e.value<=Math.max(cutoff,numerical)) continue; rank++; const a=dot(e.vector,rhs)*ridgeSpectralFactor(e.value,lambda); e.vector.forEach((v,i)=>weights[i]+=a*v); }
   return {weights,rank,eigenvalues:eig.map(e=>e.value), predict: features=>dot(weights,features)};
 }

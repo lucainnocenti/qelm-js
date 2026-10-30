@@ -16,6 +16,8 @@ All core exports are available through `src/index.js`. Inputs are plain arrays (
 
 `sampleFrequencies(p, shots, rng)` draws exact independent categorical trials. `shots` is a positive safe integer or `Infinity` (returns exact probabilities). Its cost is O(shots × outcomes), so avoid extremely large counts or substitute a faster sampler. `frequencyCovariance(p, shots)` returns (diag(p) − ppᵀ)/shots, and zero at infinite shots. Probabilities must sum to one within 1e-8.
 
+`ridgeSpectralFactor(s², lambda)` returns `1 / (s² + lambda)` for a retained SVD mode (and zero for `s² = lambda = 0`); multiply it by the unnormalized singular vectors as appropriate. Both arguments must be finite and nonnegative.
+
 `fitReadout(X, y, {lambda=0, rcond=1e-10})` minimizes `||Xw − y||² + lambda ||w||²`, without an implicit intercept. Add a constant feature if one is needed. It returns `{weights, rank, eigenvalues, predict(features)}`. For zero lambda it uses a truncated pseudoinverse; small eigendirections of XᵀX are also dropped at a floating-point precision threshold even with positive ridge. `rcond` is a relative singular-value cutoff, applied squared to Gram eigenvalues. Forming the Gram matrix squares the condition number; the Jacobi eigensolver and dense storage are intended for small teaching examples, not high-dimensional or strongly ill-conditioned scientific computation. `rank` is the retained numerical rank, and eigenvalues are of XᵀX. `symmetricEigen` returns descending `{value, vector}` pairs and throws if it fails to converge.
 
 ## Statistics and sweeps

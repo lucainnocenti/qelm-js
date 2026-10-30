@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Random,mixSeed,randomPureState,randomIsometry,frameProbabilities,qubitEffects,qubitProbabilities,sampleFrequencies,frequencyCovariance,symmetricEigen,fitReadout,quantile,predictionMetrics,parameterGrid,runSweep,toCSV} from '../src/index.js';
+import {Random,mixSeed,randomPureState,randomIsometry,frameProbabilities,qubitEffects,qubitProbabilities,sampleFrequencies,frequencyCovariance,symmetricEigen,fitReadout,ridgeSpectralFactor,quantile,predictionMetrics,parameterGrid,runSweep,toCSV} from '../src/index.js';
 const near=(a,b,t=1e-9)=>assert.ok(Math.abs(a-b)<t,`${a} != ${b}`);
 test('seeded streams reproduce and separate',()=>{const a=new Random(4),b=new Random(4),c=new Random(mixSeed(4,1));for(let i=0;i<20;i++) assert.equal(a.normal(),b.normal()); assert.notEqual(c.uniform(),b.uniform());});
 test('random frames are isometric and Born probabilities agree with qubit representation',()=>{
@@ -22,6 +22,7 @@ test('eigenvectors satisfy eigen equation; ridge handles singular and regularize
  const A=[[2,1],[1,2]], eig=symmetricEigen(A); near(eig[0].value,3);near(eig[1].value,1);
  for(const e of eig) for(let i=0;i<2;i++) near(A[i][0]*e.vector[0]+A[i][1]*e.vector[1],e.value*e.vector[i]);
  const fit=fitReadout([[1,1],[2,2]],[2,4]);near(fit.weights[0],1);near(fit.weights[1],1);assert.equal(fit.rank,1);near(fit.predict([3,3]),6);
+ near(ridgeSpectralFactor(4,1),.2);near(ridgeSpectralFactor(4,0),.25);assert.equal(ridgeSpectralFactor(0,0),0);assert.throws(()=>ridgeSpectralFactor(1,-1));
  const ridge=fitReadout([[1,0],[0,1]],[2,4],{lambda:1});near(ridge.weights[0],1);near(ridge.weights[1],2);
 });
 test('statistics, grid, CSV, and cancellation',async()=>{
